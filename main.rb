@@ -28,6 +28,8 @@ class Main
       puts "Отцеплять вагоны от поезда, введите 6"
       puts "Перемещать поезд по маршруту вперед и назад, введите 7"
       puts "Просматривать список станций и список поездов на станции, введите 8"
+      puts "Просматривать список вагонов у заданного поезда, введите 9"
+      puts "Занимать место или объем в вагоне, введите 10"
       puts "Для выхода из программы, введите 0"
       case gets.to_i
         when 0 then break
@@ -39,6 +41,8 @@ class Main
         when 6 then delete_wagon
         when 7 then move_train
         when 8 then show_stations_trains
+        when 9 then show_trains_carriages
+        when 10 then take_place_volume
       end
     end
   end
@@ -129,6 +133,40 @@ class Main
     puts "На станции #{station.name} находятся поезда:"
     station.each_train { |train| puts "Номер поезда - #{train.number}, тип поезда - #{train.type}, кол-во вагонов - #{train.carriages.size}" }
   end
+  
+  def show_trains_carriages
+    system 'clear'
+    set_train
+    train = @trains[gets.to_i]
+    x = 1
+    if train.type == :cargo
+      train.each_carriage do |carriage|
+        puts "Номер вагона - #{x}, тип вагона - грузовой, кол-во свободного объема - #{carriage.current_free_volume}, кол-во занятого объема - #{carriage.current_fill_volume}"
+        x += 1
+      end
+    else
+      train.each_carriage do |carriage|
+        puts "Номер вагона - #{x}, тип вагона - пассажирский, кол-во свободных мест - #{carriage.free_places}, кол-во занятых мест - #{carriage.taken_places}"
+        x += 1
+      end
+    end
+  end
+  
+  def take_place_volume
+    system 'clear'
+    set_train
+    train = @trains[gets.to_i]
+    puts "Выберете вагон:"
+    train.carriages.each_with_index { |carriage, index| puts "#{index} - #{carriage}" }
+    carriage = train.carriages[gets.to_i]
+    if carriage.type == :cargo
+      puts "Укажите объем, который нужно занять"
+      carriage.fill_volume(gets.to_i)
+    else
+      carriage.take_place
+      puts "Вы заняли одно место."
+    end
+  end
 
   def create_passenger_train
     puts "Введите номер поезда"
@@ -218,7 +256,7 @@ class Main
 end
 
 main = Main.new
-# =begin seeds
+=begin seeds
 irpen = Station.new("Irpen")
 kiev = Station.new("Kiev")
 borispol = Station.new("Borispol")
@@ -228,10 +266,10 @@ irpen_borispol = Route.new(irpen, borispol)
 irpen_borispol.add_station(kiev)
 main.routes << irpen_borispol
 p main.routes
-pobeda = CargoTrain.new("123-12")
+pobeda = PassengerTrain.new("123-12")
 main.trains << pobeda
 p main.trains
 pobeda.take_route(irpen_borispol)
 p pobeda
-# =end
+=end
 main.run
