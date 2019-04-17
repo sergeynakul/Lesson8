@@ -157,7 +157,7 @@ class Main
     set_train
     train = @trains[gets.to_i]
     puts "Выберете вагон:"
-    train.carriages.each_with_index { |carriage, index| puts "#{index} - #{carriage}" }
+    train.carriages.each_with_index { |carriage, index| puts "#{index} - #{carriage.type}" }
     carriage = train.carriages[gets.to_i]
     if carriage.type == :cargo
       puts "Укажите объем, который нужно занять"
@@ -271,5 +271,10 @@ main.trains << pobeda
 p main.trains
 pobeda.take_route(irpen_borispol)
 p pobeda
+wagon = PassengerCarriage.new(100)
+pobeda.carriages << wagon
+wagon2 = PassengerCarriage.new(110)
+pobeda.carriages << wagon2
+p pobeda.carriages
 =end
 main.run

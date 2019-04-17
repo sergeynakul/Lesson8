@@ -21,10 +21,6 @@ class Train
     @speed = 0
   end
 
-  def each_carriage
-    @carriages.each { |carriage| yield carriage }
-  end
-
   def take_route(route)
     @route = route
     @route.stations.first.take_train(self)
@@ -61,6 +57,10 @@ class Train
     @@trains[number]
   end
 
+  def each_carriage
+    @carriages.each { |carriage| yield carriage }
+  end
+  
   private
 
   def validate!
